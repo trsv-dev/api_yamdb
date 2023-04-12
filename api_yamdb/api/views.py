@@ -1,6 +1,10 @@
 from rest_framework import viewsets
+from rest_framework.pagination import LimitOffsetPagination
 
 from reviews.models import User, Category, Genre, Title, Review, Comment
+
+from api.serializers import ReviewSerializer, CommentSerializer
+from rest_framework.response import Response
 
 
 class Auth:  # надо придумать от чего наследовать
@@ -61,7 +65,21 @@ class ReviewViewSet(viewsets.ModelViewSet):
     частично обновить отзыв по id,
     удалить отзыв по id.
     """
-    pass
+    serializer_class = ReviewSerializer
+    queryset = Review.objects.all()
+    pagination_class = LimitOffsetPagination
+
+    def perform_create(self, serializer):
+        title_id = self.kwargs.get("title_id")
+        serializer.save(title_id=title_id, author=self.request.user)
+
+    def get_queryset(self):
+        title_id = self.kwargs.get("title_id")
+        review_id = self.kwargs.get("review_id")
+        queryset = Review.objects.filter(title_id=title_id)
+        if review_id:
+            queryset = queryset.filter(id=review_id)
+        return queryset
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -72,4 +90,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     частично обновить комментарий к отзыву по id,
     удалить комментарий к отзыву по id.
     """
-    pass
+    serializer_class = CommentSerializer
+    pagination_class = LimitOffsetPagination
+
+    def get_queryset(self):
+        review_id = self.kwargs.get("review_id")
+        queryset = Comment.objects.filter(review_id=review_id)
+        return queryset
+    
+    def perform_create(self, serializer):
+        review_id = self.kwargs.get("review_id")
+        serializer.save(review_id=review_id, author=self.request.user)
