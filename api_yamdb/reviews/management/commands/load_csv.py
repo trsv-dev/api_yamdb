@@ -1,36 +1,40 @@
-from sqlite3 import IntegrityError
+import csv
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
-from reviews.management.commands._load_cvs_func import load_func
+from api_yamdb.settings import BASE_DIR
+from reviews.models import Category, Comment, Genre, Review, Title, User
+
+CSV_DATA = {
+    User: 'users.csv',
+    Category: 'category.csv',
+    Genre: 'genre.csv',
+    Title: 'titles.csv',
+    Review: 'review.csv',
+    Comment: 'comments.csv'
+}
 
 
 class Command(BaseCommand):
-    """
-    Наполнение БД тестовыми данными из .csv
-    """
     help = 'Загрузка тестовых файлов .csv в базу sqlite3'
 
     def handle(self, *args, **options):
-        try:
-            load_func(self)
+        for model, file_csv in CSV_DATA.items():
 
-        except IntegrityError:
-            raise CommandError(
-                f'База данных нуждается в очистке '
-                f'перед импортом. Удалите базу данных '
-                f'и выполните "python manage.py migrate"'
-            )
+            with open(
+                    f'{BASE_DIR}/static/data/{file_csv}',
+                    'r', encoding='utf-8'
+            ) as file:
+                data = csv.DictReader(file)
+                lst = []
 
-        except FileNotFoundError:
-            raise CommandError(
-                'Файлы формата .csv в static/data не найдены')
+                for row in data:
+                    if 'category' in row:
+                        row['category_id'] = row.pop('category')
+                    elif 'author' in row:
+                        row['author_id'] = row.pop('author')
+                    lst.append(model(**row))
 
-        except Exception:
-            raise CommandError(
-                'Неожиданная ошибка работы импорта load_csv,'
-            )
+                model.objects.bulk_create(lst)
 
-        self.stdout.write(self.style.SUCCESS(
-            'Все данные из csv-файлов загружены в базу данных'
-        ))
+        return 'Данные успешно загружены'
