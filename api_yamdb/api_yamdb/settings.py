@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from django.conf.global_settings import DATETIME_INPUT_FORMATS
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -100,6 +101,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+DATETIME_INPUT_FORMATS += ('%Y-%m-%dT%H:%M:%S.%fZ',)
 
 # Static files (CSS, JavaScript, Images)
 
