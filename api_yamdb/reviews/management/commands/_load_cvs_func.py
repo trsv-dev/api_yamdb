@@ -51,7 +51,7 @@ def load_func(self, *args, **options):
 
             # очищаем базу от старых данных перед импортом
             model.objects.all().delete()
-            # наполняем новыми данными
+            # наполняем новыми данными из файла .csv
             model.objects.bulk_create(lst)
 
             print(f'Файл {file_csv} загружен')

@@ -32,5 +32,5 @@ class Command(BaseCommand):
             )
 
         self.stdout.write(self.style.SUCCESS(
-            'Все данные из csv-файлов загружены в базу данных'
+            'Все данные из .csv файлов загружены в базу данных'
         ))
