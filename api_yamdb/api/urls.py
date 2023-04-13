@@ -24,7 +24,6 @@ router.register(
     CommentViewSet, basename='comments'
 )
 
-
 urlpatterns = [
     path('v1/', include(router.urls)),
     # path('v1/auth/token', ...),  # дописать когда будет аутентификация
