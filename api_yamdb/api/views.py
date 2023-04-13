@@ -1,10 +1,15 @@
 from rest_framework import viewsets
+from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
 
 from reviews.models import User, Category, Genre, Title, Review, Comment
 
-from api.serializers import ReviewSerializer, CommentSerializer
+from api.serializers import (ReviewSerializer, CommentSerializer,
+                             CategorySerializer, GenreSerializer,
+                             TitleGetSerializer, TitlePostSerializer)
+from api.mixins import CreateDestroyListViewSet
 from rest_framework.response import Response
+from api.permissions import AdminUserOrReadOnly
 
 
 class Auth:  # надо придумать от чего наследовать
@@ -28,22 +33,36 @@ class UserViewSet(viewsets.ModelViewSet):
     pass
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(CreateDestroyListViewSet):
     """
     Получить список всех категорий,
     создать категорию,
     удалить категорию.
     """
-    pass
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (AdminUserOrReadOnly,)
+    pagination_class = LimitOffsetPagination
+
+    filter_backends = (SearchFilter, )
+    search_fields = ('name', )
+    lookup_field = 'slug'
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(CreateDestroyListViewSet):
     """
     Получить список всех жанров,
     добавить жанр,
     удалить жанр.
     """
-    pass
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (AdminUserOrReadOnly,)
+    pagination_class = LimitOffsetPagination
+
+    filter_backends = (SearchFilter, )
+    search_fields = ('name', )
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -54,7 +73,16 @@ class TitleViewSet(viewsets.ModelViewSet):
     частичное обновление информации о произведении,
     удаление произведения.
     """
-    pass
+    queryset = Title.objects.select_related('author')
+    # serializer_class = (...)
+    # permission_classes = (AdminOrReadOnly,)
+    pagination_class = LimitOffsetPagination
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
