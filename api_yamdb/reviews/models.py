@@ -3,8 +3,10 @@ from datetime import datetime
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-
+from django.db.models import Avg
 from reviews.validators import username_validator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 USER = 'Пользователь'
 MODERATOR = 'Модератор'
@@ -162,6 +164,10 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+    
+    def update_rating(self):
+        self.rating = self.reviews.aggregate(Avg("score"))["score__avg"] or 0
+        self.save()
 
     def __str__(self):
         return self.name
@@ -215,7 +221,7 @@ class Review(models.Model):
         help_text='Выберите автора'
     )
     score = models.IntegerField(
-        verbose_name='Рейтинг',
+        verbose_name='Оценка',
         help_text='Оцените от 1 до 10',
         validators=(
             MinValueValidator(1, message='Оценка должна быть от 1 до 10'),
@@ -225,6 +231,18 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата публикации'
+    )
+
+    rating = models.DecimalField(
+        default=0,
+        max_digits=10,
+        decimal_places=2,
+        verbose_name='Рейтинг',
+        help_text='Рейтинг произведения.',
+        validators=(
+            MinValueValidator(1),
+            MaxValueValidator(10)
+        )
     )
 
     class Meta:
@@ -238,6 +256,14 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         ordering = ('-pub_date',)
+    
+    def average_rating(self) -> float:
+        return Review.objects.filter(title=self.title).aggregate(Avg("score"))["score__avg"] or 0
+        
+
+    def save(self, *args, **kwargs):
+        self.rating = self.average_rating()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Отзыв {self.author} на "{self.title}"'

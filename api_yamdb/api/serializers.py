@@ -15,7 +15,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = "__all__"
         model = Review
-        read_only_fields = ("author", "title",)
+        read_only_fields = ("author", "title", "rating",)
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(slug_field="username",
