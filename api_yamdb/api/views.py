@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
@@ -6,7 +7,7 @@ from reviews.models import User, Category, Genre, Title, Review, Comment
 
 from api.serializers import (ReviewSerializer, CommentSerializer,
                              CategorySerializer, GenreSerializer,
-                             TitleGetSerializer, TitlePostSerializer)
+                             TitleReadSerializer, TitleWriteSerializer)
 from api.mixins import CreateDestroyListViewSet
 from rest_framework.response import Response
 from api.permissions import AdminUserOrReadOnly
@@ -43,10 +44,8 @@ class CategoryViewSet(CreateDestroyListViewSet):
     serializer_class = CategorySerializer
     permission_classes = (AdminUserOrReadOnly,)
     pagination_class = LimitOffsetPagination
-
     filter_backends = (SearchFilter, )
-    search_fields = ('name', )
-    lookup_field = 'slug'
+    search_fields = ('name', 'slug')
 
 
 class GenreViewSet(CreateDestroyListViewSet):
@@ -59,10 +58,8 @@ class GenreViewSet(CreateDestroyListViewSet):
     serializer_class = GenreSerializer
     permission_classes = (AdminUserOrReadOnly,)
     pagination_class = LimitOffsetPagination
-
     filter_backends = (SearchFilter, )
-    search_fields = ('name', )
-    lookup_field = 'slug'
+    search_fields = ('name', 'slug')
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -73,16 +70,16 @@ class TitleViewSet(viewsets.ModelViewSet):
     частичное обновление информации о произведении,
     удаление произведения.
     """
-    queryset = Title.objects.select_related('author')
-    # serializer_class = (...)
-    # permission_classes = (AdminOrReadOnly,)
+    queryset = Title.objects.annotate(rating=Avg('reviews__score')).all()
+    # serializer_class = TitleWriteSerializer
     pagination_class = LimitOffsetPagination
+    filter_backends = (SearchFilter, )
+    search_fields = ('name', 'year', 'slug')
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-    def perform_update(self, serializer):
-        serializer.save(author=self.request.user)
+    def get_serializer_class(self):
+        if self.action in ('list', 'retrieve'):
+            return TitleReadSerializer
+        return TitleWriteSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

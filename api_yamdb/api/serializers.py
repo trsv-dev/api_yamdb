@@ -18,7 +18,7 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('name', 'slug')
 
 
-class TitlePostSerializer(serializers.ModelSerializer):
+class TitleWriteSerializer(serializers.ModelSerializer):
     """Сериализатор для POST-запроса к Title."""
     category = SlugRelatedField(
         slug_field='slug',
@@ -37,10 +37,10 @@ class TitlePostSerializer(serializers.ModelSerializer):
         )
 
 
-class TitleGetSerializer(serializers.ModelSerializer):
+class TitleReadSerializer(serializers.ModelSerializer):
     """ Сериализатор для GET-запроса к Title."""
     category = CategorySerializer(read_only=True)
-    genre = GenreSerializer(read_only=True)
+    genre = GenreSerializer(read_only=True, many=True)
 
     class Meta:
         model = Title
