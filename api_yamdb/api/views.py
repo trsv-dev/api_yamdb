@@ -1,8 +1,10 @@
 from django.db.models import Avg
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
 
+from api.filters import TitleFilter
 from reviews.models import User, Category, Genre, Title, Review, Comment
 
 from api.serializers import (ReviewSerializer, CommentSerializer,
@@ -70,11 +72,11 @@ class TitleViewSet(viewsets.ModelViewSet):
     частичное обновление информации о произведении,
     удаление произведения.
     """
-    queryset = Title.objects.annotate(rating=Avg('reviews__score')).all()
-    # serializer_class = TitleWriteSerializer
+    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
+    # permission_classes = (AdminUserOrReadOnly,)
     pagination_class = LimitOffsetPagination
-    filter_backends = (SearchFilter, )
-    search_fields = ('name', 'year', 'slug')
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
