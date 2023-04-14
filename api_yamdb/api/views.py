@@ -96,10 +96,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
-        if review_id:
-            queryset = Comment.objects.filter(review_id=review_id)
-        else:
-            queryset = Comment.objects.all()
+        queryset = Comment.objects.filter(review_id=review_id)
         return queryset
     
     def get_serializer_class(self):
