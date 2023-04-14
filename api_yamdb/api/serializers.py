@@ -25,3 +25,10 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = "__all__"
         model = Comment
         read_only_fields = ("author",)
+
+class AllcomentsSerializer(serializers.ModelSerializer): 
+    author = serializers.StringRelatedField(read_only=True) 
+
+    class Meta: 
+        fields = "__all__"
+        model = Comment 
