@@ -76,6 +76,18 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
+    @property
+    def is_user(self):
+        return self.role == USER
+
+    @property
+    def is_admin(self):
+        return self.role == ADMIN
+
+    @property
+    def is_moderator(self):
+        return self.role == MODERATOR
+
     def __str__(self):
         return self.username
 
@@ -88,7 +100,7 @@ class Category(models.Model):
     )
     slug = models.SlugField(
         unique=True,
-        max_length=100,
+        max_length=50,
         verbose_name='URL',
         help_text='Укажите URL категории'
     )
@@ -109,7 +121,7 @@ class Genre(models.Model):
     )
     slug = models.SlugField(
         unique=True,
-        max_length=100,
+        max_length=50,
         verbose_name='URL',
         help_text='Укажите URL жанра'
     )
