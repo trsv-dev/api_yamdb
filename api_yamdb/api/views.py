@@ -2,7 +2,7 @@ from django.db.models import Avg
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
-
+from django.shortcuts import get_object_or_404
 from reviews.models import User, Category, Genre, Title, Review, Comment
 
 
@@ -120,18 +120,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     """
     serializer_class = CommentSerializer
     pagination_class = LimitOffsetPagination
-    queryset = Comment.objects.all()
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
-        queryset = Comment.objects.filter(review_id=review_id)
-        return queryset
-    
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return AllcomentsSerializer
-        return CommentSerializer
-    
+        review = get_object_or_404(Review, id=review_id)
+        return review.comments.all()
     
     def perform_create(self, serializer):
         review_id = self.kwargs.get("review_id")
