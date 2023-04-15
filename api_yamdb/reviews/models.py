@@ -279,7 +279,7 @@ class Review(models.Model):
         ordering = ('-pub_date',)
 
     def average_rating(self) -> float:
-        return Review.objects.filter(title=self.title).aggregate(Avg("score"))["score__avg"] or 0
+        return Review.objects.aggregate(Avg("score"))['score__avg']
 
     def save(self, *args, **kwargs):
         self.rating = self.average_rating()
