@@ -5,24 +5,25 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import Avg
 from reviews.validators import username_validator
+from django.core.validators import RegexValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-USER = 'Пользователь'
-MODERATOR = 'Модератор'
-ADMIN = 'Администратор'
-
-ROLE_CHOICES = (
-    (USER, 'Пользователь'),
-    (MODERATOR, 'Модератор'),
-    (ADMIN, 'Администратор')
-)
-
 
 class User(AbstractUser):
+
+    ADMIN = 'admin'
+    MODERATOR = 'moderator'
+    USER = 'user'
+    ROLE_CHOICES = [
+        (ADMIN, 'Администратор'),
+        (MODERATOR, 'Модератор'),
+        (USER, 'Пользователь'),
+    ]
+
     username = models.CharField(
         validators=(username_validator,),
-        max_length=200,
+        max_length=150,
         unique=True,
         blank=False,
         null=False,
@@ -30,7 +31,7 @@ class User(AbstractUser):
         help_text='Имя пользователя'
     )
     email = models.EmailField(
-        max_length=200,
+        max_length=254,
         unique=True,
         blank=False,
         null=False,
@@ -43,13 +44,13 @@ class User(AbstractUser):
         help_text='Напишите пару фактов из биографии'
     )
     first_name = models.CharField(
-        max_length=200,
+        max_length=150,
         blank=True,
         verbose_name='Имя',
         help_text='Введите имя'
     )
     last_name = models.CharField(
-        max_length=200,
+        max_length=150,
         blank=True,
         verbose_name='Фамилия',
         help_text='Введите фамилию'
@@ -58,7 +59,7 @@ class User(AbstractUser):
     role = models.CharField(
         choices=ROLE_CHOICES,
         default=USER,
-        max_length=50,
+        max_length=150,
         blank=True,
         verbose_name='Роль',
         help_text='Выберите роль'
@@ -76,30 +77,32 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-    @property
-    def is_user(self):
-        return self.role == USER
+    def __str__(self):
+        return self.username
 
     @property
     def is_admin(self):
-        return self.role == ADMIN
+        return self.role == self.ADMIN
 
     @property
     def is_moderator(self):
-        return self.role == MODERATOR
-
-    def __str__(self):
-        return self.username
+        return self.role == self.MODERATOR
 
 
 class Category(models.Model):
     name = models.CharField(
-        max_length=100,
+        max_length=256,
         verbose_name='Категория',
         help_text='Укажите название категории'
     )
     slug = models.SlugField(
         unique=True,
+        validators=(
+            RegexValidator(
+                regex=r'^[-a-zA-Z0-9_]+$',
+                message='Недопустимый символ в slug'
+            ),
+        ),
         max_length=50,
         verbose_name='URL',
         help_text='Укажите URL категории'
@@ -121,7 +124,12 @@ class Genre(models.Model):
     )
     slug = models.SlugField(
         unique=True,
-        max_length=50,
+        validators=(
+            RegexValidator(
+                regex=r'^[-a-zA-Z0-9_]+$',
+                message='Недопустимый символ в slug'
+            ),
+        ),
         verbose_name='URL',
         help_text='Укажите URL жанра'
     )
@@ -136,7 +144,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(
-        max_length=200,
+        max_length=100,
         verbose_name='Название',
         help_text='Укажите название'
     )
@@ -161,6 +169,7 @@ class Title(models.Model):
     )
     genre = models.ManyToManyField(
         Genre,
+        blank=True,
         through='GenreTitle',
         related_name='titles',
         verbose_name='Жанр',
@@ -176,7 +185,7 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
-    
+
     def update_rating(self):
         self.rating = self.reviews.aggregate(Avg("score"))["score__avg"] or 0
         self.save()
@@ -268,10 +277,9 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         ordering = ('-pub_date',)
-    
+
     def average_rating(self) -> float:
         return Review.objects.filter(title=self.title).aggregate(Avg("score"))["score__avg"] or 0
-        
 
     def save(self, *args, **kwargs):
         self.rating = self.average_rating()

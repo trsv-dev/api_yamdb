@@ -51,6 +51,7 @@ class CategoryViewSet(CreateDestroyListViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', 'slug')
+    lookup_field = 'slug'
 
 
 class GenreViewSet(CreateDestroyListViewSet):
@@ -65,6 +66,7 @@ class GenreViewSet(CreateDestroyListViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', 'slug')
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -76,7 +78,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     удаление произведения.
     """
     queryset = Title.objects.annotate(rating=Avg('reviews__score'))
-    # permission_classes = (AdminUserOrReadOnly,)
+    permission_classes = (AdminUserOrReadOnly,)
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
@@ -128,13 +130,12 @@ class CommentViewSet(viewsets.ModelViewSet):
         review_id = self.kwargs.get("review_id")
         queryset = Comment.objects.filter(review_id=review_id)
         return queryset
-    
+
     def get_serializer_class(self):
         if self.action == 'list':
             return AllcomentsSerializer
         return CommentSerializer
-    
-    
+
     def perform_create(self, serializer):
         review_id = self.kwargs.get("review_id")
         serializer.save(review_id=review_id, author=self.request.user)

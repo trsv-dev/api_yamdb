@@ -9,6 +9,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('name', 'slug')
+        lookup_field = 'slug'
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -16,6 +17,7 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = ('name', 'slug')
+        lookup_field = 'slug'
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
@@ -70,11 +72,11 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = "__all__"
         model = Comment
         read_only_fields = ("author",)
-        
+
+
 class AllcomentsSerializer(serializers.ModelSerializer): 
     author = serializers.StringRelatedField(read_only=True) 
 
     class Meta: 
         fields = "__all__"
         model = Comment 
-
