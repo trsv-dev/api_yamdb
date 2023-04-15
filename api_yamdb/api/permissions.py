@@ -4,7 +4,7 @@ from rest_framework import permissions
 class AdminUserOrReadOnly(permissions.BasePermission):
     """Пермишн для работы с Genres и Categories"""
 
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
         if request.user.is_authenticated:

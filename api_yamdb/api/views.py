@@ -54,6 +54,7 @@ class CategoryViewSet(CreateDestroyListViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', 'slug')
+    lookup_field = 'slug'
 
 
 class GenreViewSet(CreateDestroyListViewSet):
@@ -68,6 +69,7 @@ class GenreViewSet(CreateDestroyListViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter, )
     search_fields = ('name', 'slug')
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -79,7 +81,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     удаление произведения.
     """
     queryset = Title.objects.annotate(rating=Avg('reviews__score'))
-    # permission_classes = (AdminUserOrReadOnly,)
+    permission_classes = (AdminUserOrReadOnly,)
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter

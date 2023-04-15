@@ -2,8 +2,8 @@ from django.urls import path, include
 from rest_framework import routers
 
 # в строку ниже надо добавить вьюсет для Auth когда он будет готов
-from .views import (UserViewSet, CategoryViewSet, GenreViewSet,
-                    TitleViewSet, ReviewViewSet, CommentViewSet)
+from .views import (CategoryViewSet, GenreViewSet, TitleViewSet,
+                    UserViewSet, ReviewViewSet, CommentViewSet)
 
 router = routers.DefaultRouter()
 
@@ -11,7 +11,6 @@ router = routers.DefaultRouter()
 # пока Auth как заглушка
 
 # router.register(r'auth', Auth, basename='auth')
-router.register(r'groups', UserViewSet, basename='users')
 router.register(r'users', UserViewSet, basename='users')
 router.register(r'categories', CategoryViewSet, basename='categories')
 router.register(r'genres', GenreViewSet, basename='genres')
