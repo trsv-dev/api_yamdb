@@ -3,6 +3,9 @@ from rest_framework.relations import SlugRelatedField
 
 from reviews.models import User, Category, Genre, Title, Review, Comment
 
+from rest_framework import serializers
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 class CategorySerializer(serializers.ModelSerializer):
     """ Сериализатор для GET-запроса к Category."""
@@ -78,4 +81,19 @@ class AllcomentsSerializer(serializers.ModelSerializer):
 
     class Meta: 
         fields = "__all__"
-        model = Comment 
+        model = Comment
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+    username = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username')
+        read_only_fields = ['id', ]
+
+
+class ConfirmationSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)

@@ -3,7 +3,8 @@ from rest_framework import routers
 
 # в строку ниже надо добавить вьюсет для Auth когда он будет готов
 from .views import (CategoryViewSet, GenreViewSet, TitleViewSet,
-                    UserViewSet, ReviewViewSet, CommentViewSet)
+                    UserViewSet, ReviewViewSet, CommentViewSet,
+                    CustomSignUp, GetToken)
 
 router = routers.DefaultRouter()
 
@@ -26,6 +27,8 @@ router.register(
 
 urlpatterns = [
     path('v1/', include(router.urls)),
-    # path('v1/auth/token', ...),  # дописать когда будет аутентификация
-    # path('v1/auth/signup/', ...),# дописать когда будет аутентификация
+    path('v1/signup', CustomSignUp.as_view(), name='signup'),
+    path('v1/token', GetToken.as_view(), name='token')
+    # path('v1/auth/token', ...),
+    # path('v1/auth/signup/', ...),
 ]
