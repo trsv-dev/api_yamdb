@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from django.conf.global_settings import DATETIME_INPUT_FORMATS
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +26,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
-    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -103,8 +101,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-DATETIME_INPUT_FORMATS += ('%Y-%m-%dT%H:%M:%S.%fZ',)
-
 # Static files (CSS, JavaScript, Images)
 
 STATIC_URL = '/static/'
@@ -112,17 +108,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS':
-        'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
     ],
 }
 
