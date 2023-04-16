@@ -1,6 +1,5 @@
-import datetime
-import os
 from pathlib import Path
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,13 +21,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
+    'rest_framework_simplejwt',
     'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
-    'drf_yasg',
-    'rest_framework_simplejwt',
-    'authentication',
-
 ]
 
 MIDDLEWARE = [
@@ -116,23 +113,4 @@ REST_FRAMEWORK = {
     ],
 }
 
-AUTH_USER_MODEL = 'authentication.User'
-
-RECIPIENT_ADDRESS = 'novakromanov@yandex.ru'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = 'novakromanov@yandex.ru'
-EMAIL_HOST_PASSWORD = '89261280033Aaa!'
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = 'novakromanov@yandex.ru'
-
-JWT_AUTH = {
-    'JWT_VERIFY': True,
-    'JWT_VERIFY_EXPIRATION': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
-}
-
-CSRF_TRUSTED_ORIGINS = ['*']
+AUTH_USER_MODEL = 'reviews.User'
