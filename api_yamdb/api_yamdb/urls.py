@@ -1,6 +1,8 @@
+from django.views.generic import TemplateView
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import TemplateView
+import json
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,4 +12,6 @@ urlpatterns = [
         TemplateView.as_view(template_name='redoc.html'),
         name='redoc'
     ),
+    path('auth/', include('authentication.urls')),
+    path('post/', include('reviews.urls')),
 ]
