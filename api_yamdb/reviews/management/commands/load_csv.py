@@ -1,6 +1,5 @@
-from sqlite3 import IntegrityError
-
 from django.core.management.base import BaseCommand, CommandError
+from django.db import IntegrityError
 
 from reviews.management.commands._load_cvs_func import load_func
 

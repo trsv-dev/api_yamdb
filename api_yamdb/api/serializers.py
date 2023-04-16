@@ -34,20 +34,19 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = (
-            'id', 'name', 'year', 'category', 'genre', 'description'
-        )
+        fields = '__all__'
 
 
 class TitleReadSerializer(serializers.ModelSerializer):
     """ Сериализатор для GET-запроса к Title."""
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(read_only=True, many=True)
+    rating = serializers.IntegerField(default=0)
 
     class Meta:
         model = Title
         fields = (
-            'id', 'name', 'year', 'category', 'genre', 'description'
+            'id', 'name', 'year', 'category', 'genre', 'description', 'rating'
         )
 
 
