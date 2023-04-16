@@ -1,3 +1,5 @@
+import datetime
+import os
 from pathlib import Path
 
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
@@ -28,6 +30,7 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
     'django_filters',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +130,22 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'reviews.User'
+
+RECIPIENT_ADDRESS = 'novakromanov@yandex.ru'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'novakromanov@yandex.ru'
+EMAIL_HOST_PASSWORD = '89261280033Aaa!'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = 'novakromanov@yandex.ru'
+
+JWT_AUTH = {
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
+}
+
+CSRF_TRUSTED_ORIGINS = ['*']
