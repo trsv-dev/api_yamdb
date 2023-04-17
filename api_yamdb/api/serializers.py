@@ -2,9 +2,10 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
 from reviews.models import User, Category, Genre, Title, Review, Comment
-
+from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.validators import UniqueTogetherValidator
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -45,34 +46,48 @@ class TitleReadSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(read_only=True, many=True)
     rating = serializers.IntegerField(default=0)
+    
 
     class Meta:
         model = Title
         fields = (
             'id', 'name', 'year', 'category', 'genre', 'description', 'rating'
         )
-
+        
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        slug_field="username",
-        queryset=User.objects.all(),
-        default=serializers.CurrentUserDefault(),
+        slug_field='username', read_only=True,
+        default=serializers.CurrentUserDefault()
     )
 
     class Meta:
-        fields = "__all__"
         model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date',)
 
+    def validate(self, data):
+        if self.context['request'].method != 'POST':
+            return data
 
+        title_id = self.context['view'].kwargs.get('title_id')
+        author = self.context['request'].user
+        if Review.objects.filter(
+                author=author, title=title_id).exists():
+            raise serializers.ValidationError(
+                'Вы уже написали отзыв для этого произведения.'
+            )
+        return data
+
+        
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(slug_field="username",
-                                          read_only=True)
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True,
+        default=serializers.CurrentUserDefault()
+    )
 
     class Meta:
         model = Comment
-        read_only_fields = ("author",)
-        exclude = ('review',)
+        fields = ('id', 'text', 'author', 'pub_date')
         
         
 class AllcomentsSerializer(serializers.ModelSerializer): 
