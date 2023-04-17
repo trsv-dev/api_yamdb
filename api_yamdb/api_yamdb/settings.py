@@ -130,15 +130,21 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'reviews.User'
 
-RECIPIENT_ADDRESS = 'novakromanov@yandex.ru'
+with open(
+        BASE_DIR/'static/.email_credentials',
+        'r', encoding='utf-8') as f:
+    EMAIL_ADDRESS = f.readline().rstrip()
+    EMAIL_PASS = f.readline().rstrip()
+
+RECIPIENT_ADDRESS = EMAIL_ADDRESS
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'novakromanov@yandex.ru'
-EMAIL_HOST_PASSWORD = '89261280033Aaa!'
+EMAIL_HOST_USER = EMAIL_ADDRESS
+EMAIL_HOST_PASSWORD = EMAIL_PASS
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = 'novakromanov@yandex.ru'
+DEFAULT_FROM_EMAIL = EMAIL_ADDRESS
 
 JWT_AUTH = {
     'JWT_VERIFY': True,
