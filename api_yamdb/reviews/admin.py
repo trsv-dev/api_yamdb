@@ -48,11 +48,10 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title_id', 'author', 'text', 'score', 'pub_date', 'rating')
+    list_display = ('id', 'title_id', 'author', 'text', 'score', 'pub_date',)
     list_display_links = ('id', 'title_id', 'author', 'text', 'score', 'pub_date')
     search_fields = ('author__username', 'text', 'pub_date')
     list_filter = ('pub_date',)
-    readonly_fields = ('rating',)
 
 
 @admin.register(Comment)

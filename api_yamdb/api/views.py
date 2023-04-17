@@ -10,7 +10,6 @@ from api.filters import TitleFilter
 
 from reviews.models import User, Category, Genre, Title, Review, Comment
 
-
 from api.serializers import (ReviewSerializer, CommentSerializer,
                              CategorySerializer, GenreSerializer,
                              TitleReadSerializer, TitleWriteSerializer,
@@ -18,7 +17,7 @@ from api.serializers import (ReviewSerializer, CommentSerializer,
 from api.mixins import CreateDestroyListViewSet
 
 from rest_framework.response import Response
-from api.permissions import AdminUserOrReadOnly
+from api.permissions import AdminUserOrReadOnly, AdminModeratorAuthorOrReadOnly
 from django.core.mail import send_mail
 from rest_framework import status, generics
 from rest_framework.generics import get_object_or_404
@@ -64,7 +63,7 @@ class CategoryViewSet(CreateDestroyListViewSet):
     serializer_class = CategorySerializer
     permission_classes = (AdminUserOrReadOnly,)
     pagination_class = LimitOffsetPagination
-    filter_backends = (SearchFilter, )
+    filter_backends = (SearchFilter,)
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
@@ -79,7 +78,7 @@ class GenreViewSet(CreateDestroyListViewSet):
     serializer_class = GenreSerializer
     permission_classes = (AdminUserOrReadOnly,)
     pagination_class = LimitOffsetPagination
-    filter_backends = (SearchFilter, )
+    filter_backends = (SearchFilter,)
     search_fields = ('name', 'slug')
     lookup_field = 'slug'
 
@@ -115,18 +114,17 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
     pagination_class = LimitOffsetPagination
+    permission_classes = (AdminModeratorAuthorOrReadOnly,)
 
     def perform_create(self, serializer):
-        title_id = self.kwargs.get("title_id")
-        serializer.save(title_id=title_id, author=self.request.user)
+        title_id = self.kwargs.get('title_id')
+        title = get_object_or_404(Title, id=title_id)
+        serializer.save(author=self.request.user, title=title)
 
     def get_queryset(self):
-        title_id = self.kwargs.get("title_id")
-        review_id = self.kwargs.get("review_id")
-        queryset = Review.objects.filter(title_id=title_id)
-        if review_id:
-            queryset = queryset.filter(id=review_id)
-        return queryset
+        title_id = self.kwargs.get('title_id')
+        title = get_object_or_404(Title, id=title_id)
+        return title.reviews.all()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -138,16 +136,17 @@ class CommentViewSet(viewsets.ModelViewSet):
     удалить комментарий к отзыву по id.
     """
     serializer_class = CommentSerializer
-    pagination_class = LimitOffsetPagination
+    permission_classes = (AdminModeratorAuthorOrReadOnly,)
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
         review = get_object_or_404(Review, id=review_id)
         return review.comments.all()
-    
+
     def perform_create(self, serializer):
-        review_id = self.kwargs.get("review_id")
-        serializer.save(review_id=review_id, author=self.request.user)
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, id=review_id)
+        serializer.save(author=self.request.user, review=review)
 
 
 class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
