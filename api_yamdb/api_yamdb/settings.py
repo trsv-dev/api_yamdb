@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
     'django_filters',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -130,26 +131,20 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'reviews.User'
 
-with open(
-        BASE_DIR/'static/.email_credentials',
-        'r', encoding='utf-8') as f:
-    EMAIL_ADDRESS = f.readline().rstrip()
-    EMAIL_PASS = f.readline().rstrip()
-
-RECIPIENT_ADDRESS = EMAIL_ADDRESS
+RECIPIENT_ADDRESS = 'novakromanov@yandex.ru'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = EMAIL_ADDRESS
-EMAIL_HOST_PASSWORD = EMAIL_PASS
+EMAIL_HOST_USER = 'novakromanov@yandex.ru'
+EMAIL_HOST_PASSWORD = '89261280033Aaa!'
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = EMAIL_ADDRESS
+DEFAULT_FROM_EMAIL = 'novakromanov@yandex.ru'
 
 JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=3000),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=100000000),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 

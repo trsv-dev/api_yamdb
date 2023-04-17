@@ -1,3 +1,4 @@
+from django.core.validators import RegexValidator
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
@@ -100,15 +101,55 @@ class AllcomentsSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
-    username = serializers.CharField(required=True)
+    email = serializers.EmailField(
+        required=True,
+        max_length=254,
+    )
+    username = serializers.CharField(
+        required=True,
+        max_length=150,
+        validators=[RegexValidator(regex=r'^[\w.@+-]+$')]
+    )
 
     class Meta:
         model = User
         fields = ('id', 'email', 'username')
         read_only_fields = ['id', ]
 
+    def validate(self, data):
+        if data.get('username') == 'me':
+            raise serializers.ValidationError(
+                'Имя пользователя "me" зарезервировано в системе'
+            )
+        return data
+
+
 
 class ConfirmationSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
+    username = serializers.CharField(
+        required=True,
+        max_length=150,
+        validators=[RegexValidator(regex=r'^[\w.@+-]+$')]
+    )
     confirmation_code = serializers.CharField(required=True)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        required=True,
+        max_length=150,
+        validators=[RegexValidator(regex=r'^[\w.@+-]+$')]
+    )
+    email = serializers.EmailField(
+        required=True,
+        max_length=254,
+    )
+    first_name = serializers.CharField(max_length=150)
+    last_name = serializers.CharField(max_length=150)
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email',
+                  'first_name', 'last_name',
+                  'bio', 'role')
+        read_only_fields = ['id', ]
