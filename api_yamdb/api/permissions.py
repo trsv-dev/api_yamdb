@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework.permissions import BasePermission
 
 
 class AdminUserOrReadOnly(permissions.BasePermission):
@@ -12,7 +13,7 @@ class AdminUserOrReadOnly(permissions.BasePermission):
         return False
 
 
-class AdminModeratorAuthorOrReadOnly(permissions.BasePermission):
+class AdminModeratorAuthorOrReadOnly(BasePermission):
     """Пермишн для работы с Reviews и Comments"""
 
     def has_permission(self, request, view):
