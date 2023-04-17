@@ -144,7 +144,7 @@ DEFAULT_FROM_EMAIL = 'novakromanov@yandex.ru'
 JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3000),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=100000000),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
