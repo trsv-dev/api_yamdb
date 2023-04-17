@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
     'django_filters',
-    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -144,7 +143,7 @@ DEFAULT_FROM_EMAIL = 'novakromanov@yandex.ru'
 JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=1000000),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=3000),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
