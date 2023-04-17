@@ -136,7 +136,7 @@ with open(
     EMAIL_ADDRESS = f.readline().rstrip()
     EMAIL_PASS = f.readline().rstrip()
 
-RECIPIENT_ADDRESS = 'novakromanov@yandex.ru'
+RECIPIENT_ADDRESS = EMAIL_ADDRESS
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
