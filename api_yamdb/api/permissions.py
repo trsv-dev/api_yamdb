@@ -3,8 +3,7 @@ from rest_framework.permissions import BasePermission
 
 
 class AdminUserOrReadOnly(permissions.BasePermission):
-    """Пермишн для работы с Genres и Categories"""
-
+    """Пермишн для работы с Genres и Categories."""
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -14,8 +13,7 @@ class AdminUserOrReadOnly(permissions.BasePermission):
 
 
 class AdminModeratorAuthorOrReadOnly(BasePermission):
-    """Пермишн для работы с Reviews и Comments"""
-
+    """Пермишн для работы с Reviews и Comments."""
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS
                 or request.user.is_authenticated)
@@ -28,9 +26,14 @@ class AdminModeratorAuthorOrReadOnly(BasePermission):
 
 
 class AdminUser(permissions.BasePermission):
-    """Пермишн для работы с Users"""
-
+    """Пермишн для работы с Users."""
     def has_permission(self, request, view):
         return request.user.is_authenticated and (
                 request.user.is_admin or
                 request.user.is_superuser)
+
+
+class AdminUserOnly(permissions.BasePermission):
+    """Пермишн для работы с Genres и Categories."""
+    def has_permission(self, request, view):
+        return request.user.is_admin

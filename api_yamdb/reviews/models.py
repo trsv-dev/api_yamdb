@@ -2,11 +2,10 @@ from datetime import datetime
 
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db import models
-from reviews.validators import username_validator
 from django.core.validators import RegexValidator
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.db import models
+
+from reviews.validators import username_validator, pattern_validator
 
 
 class User(AbstractUser):
@@ -21,7 +20,7 @@ class User(AbstractUser):
     ]
 
     username = models.CharField(
-        validators=(username_validator,),
+        validators=(username_validator, pattern_validator),
         max_length=150,
         unique=True,
         blank=False,
@@ -180,7 +179,6 @@ class Title(models.Model):
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
 
-    
     def __str__(self):
         return self.name
 
@@ -236,8 +234,12 @@ class Review(models.Model):
         verbose_name='Оценка',
         help_text='Оцените от 1 до 10',
         validators=(
-            MinValueValidator(1, message='Оценка должна быть от 1 до 10'),
-            MaxValueValidator(10, message='Оценка должна быть от 1 до 10')
+            MinValueValidator(
+                1, message='Оценка должна быть от 1 до 10'
+            ),
+            MaxValueValidator(
+                10, message='Оценка должна быть от 1 до 10'
+            )
         )
     )
     pub_date = models.DateTimeField(
