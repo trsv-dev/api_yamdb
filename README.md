@@ -133,6 +133,7 @@ pytest-django==4.4.0
 pytest-pythonpath==0.7.3
 djangorestframework-simplejwt==4.7.2
 django-filter~=23.1
+python-dotenv~=1.0.0
 ```
 
 ### Авторы:
