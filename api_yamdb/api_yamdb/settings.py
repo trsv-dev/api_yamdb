@@ -1,5 +1,6 @@
 import datetime
 import os
+from dotenv import load_dotenv
 from pathlib import Path
 
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
@@ -130,21 +131,16 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'reviews.User'
 
-with open(
-        BASE_DIR/'static/.email_credentials',
-        'r', encoding='utf-8') as f:
-    EMAIL_ADDRESS = f.readline().rstrip()
-    EMAIL_PASS = f.readline().rstrip()
-
-RECIPIENT_ADDRESS = EMAIL_ADDRESS
+load_dotenv()
+RECIPIENT_ADDRESS = os.getenv('EMAIL_ADDRESS')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = EMAIL_ADDRESS
-EMAIL_HOST_PASSWORD = EMAIL_PASS
+EMAIL_HOST_USER = os.getenv('EMAIL_ADDRESS')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = EMAIL_ADDRESS
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_ADDRESS')
 
 JWT_AUTH = {
     'JWT_VERIFY': True,
