@@ -23,11 +23,13 @@ from api import serializers
 from api.filters import TitleFilter
 from api.mixins import CreateDestroyListViewSet
 from api.mixins import UpdateModelMixin
-from api.permissions import AdminUserOrReadOnly, AdminModeratorAuthorOrReadOnly, AdminUser
+from api.permissions import (AdminUserOrReadOnly,
+                              AdminModeratorAuthorOrReadOnly,
+                              AdminUser)
 from api.serializers import (ReviewSerializer, CommentSerializer,
-                             CategorySerializer, GenreSerializer,
-                             TitleReadSerializer, TitleWriteSerializer,
-                             UserSerializer, UserMeSerializer)
+                              CategorySerializer, GenreSerializer,
+                              TitleReadSerializer, TitleWriteSerializer,
+                              UserSerializer, UserMeSerializer)
 from api_yamdb.settings import EMAIL_HOST_USER
 from reviews.models import User, Category, Genre, Title, Review
 
@@ -57,9 +59,13 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
                 EMAIL_HOST_USER,
                 [email]
             )
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                serializer.data, status=status.HTTP_200_OK
+            )
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class GetToken(generics.ListCreateAPIView):

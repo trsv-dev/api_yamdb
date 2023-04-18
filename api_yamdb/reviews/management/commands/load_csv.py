@@ -16,9 +16,8 @@ class Command(BaseCommand):
 
         except IntegrityError:
             raise CommandError(
-                f'База данных нуждается в очистке '
-                f'перед импортом. Удалите базу данных '
-                f'и выполните "python manage.py migrate"'
+                'База данных нуждается в очистке перед импортом. '
+                'Удалите базу данных и выполните "python manage.py migrate"'
             )
 
         except FileNotFoundError:

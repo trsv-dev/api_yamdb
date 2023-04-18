@@ -20,7 +20,7 @@ CSV_DATA = {
 
 def sleep_period(sec):
     for i in range(sec, 0, -1):
-        sys.stdout.write(str(i)+' ')
+        sys.stdout.write(str(i) + ' ')
         sys.stdout.flush()
         time.sleep(1)
 
@@ -28,8 +28,8 @@ def sleep_period(sec):
 def load_func(self, *args, **options):
 
     self.stdout.write(self.style.WARNING(
-        f'Перед загрузкой тестовых данных БД будет очищена. '
-        f'Чтобы отменить операцию импорта нажмите Ctrl + C'
+        'Перед загрузкой тестовых данных БД будет очищена. '
+        'Чтобы отменить операцию импорта нажмите Ctrl + C'
     ))
     sleep_period(7)
 
