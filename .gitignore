@@ -1,5 +1,4 @@
 # Byte-compiled / optimized / DLL files
-*.email_credentials
 __pycache__/
 *.py[cod]
 *$py.class
@@ -103,7 +102,9 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+*.env
 .env
+api_yamdb/.123
 .venv
 env/
 venv/
