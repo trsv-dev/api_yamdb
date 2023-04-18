@@ -1,9 +1,9 @@
 import datetime
 import os
-from dotenv import load_dotenv
 from pathlib import Path
 
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -148,5 +148,3 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=3000),
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
-
-CSRF_TRUSTED_ORIGINS = ['*']
