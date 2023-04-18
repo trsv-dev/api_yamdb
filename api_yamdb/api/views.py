@@ -24,12 +24,12 @@ from api.filters import TitleFilter
 from api.mixins import CreateDestroyListViewSet
 from api.mixins import UpdateModelMixin
 from api.permissions import (AdminUserOrReadOnly,
-                              AdminModeratorAuthorOrReadOnly,
-                              AdminUser)
+                             AdminModeratorAuthorOrReadOnly,
+                             AdminUser)
 from api.serializers import (ReviewSerializer, CommentSerializer,
-                              CategorySerializer, GenreSerializer,
-                              TitleReadSerializer, TitleWriteSerializer,
-                              UserSerializer, UserMeSerializer)
+                             CategorySerializer, GenreSerializer,
+                             TitleReadSerializer, TitleWriteSerializer,
+                             UserSerializer, UserMeSerializer)
 from api_yamdb.settings import EMAIL_HOST_USER
 from reviews.models import User, Category, Genre, Title, Review
 
