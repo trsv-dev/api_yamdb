@@ -25,12 +25,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django_filters',
     'rest_framework',
     'rest_framework_simplejwt',
-    'reviews.apps.ReviewsConfig',
+
     'api.apps.ApiConfig',
-    'django_filters',
+    'reviews.apps.ReviewsConfig',
+    'user.apps.UserConfig',
 ]
 
 MIDDLEWARE = [
@@ -129,7 +130,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-AUTH_USER_MODEL = 'reviews.User'
+AUTH_USER_MODEL = 'user.User'
 
 load_dotenv()
 RECIPIENT_ADDRESS = os.getenv('EMAIL_ADDRESS')
