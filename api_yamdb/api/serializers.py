@@ -8,6 +8,7 @@ from reviews.models import (User, Category, Genre,
 
 class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор для GET-запроса к Category."""
+
     class Meta:
         model = Category
         fields = ('name', 'slug')
@@ -16,6 +17,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class GenreSerializer(serializers.ModelSerializer):
     """Сериализатор для GET-запроса к Genre."""
+
     class Meta:
         model = Genre
         fields = ('name', 'slug')
@@ -24,6 +26,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleWriteSerializer(serializers.ModelSerializer):
     """Сериализатор для POST-запроса к Title."""
+
     category = SlugRelatedField(
         slug_field='slug',
         queryset=Category.objects.all(),
@@ -41,6 +44,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
 class TitleReadSerializer(serializers.ModelSerializer):
     """ Сериализатор для GET-запроса к Title."""
+
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(read_only=True, many=True)
     rating = serializers.IntegerField(default=0)
@@ -55,6 +59,7 @@ class TitleReadSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     """ Сериализатор для работы с Review."""
+
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault()
@@ -81,6 +86,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     """ Сериализатор для работы с Comments."""
+
     author = serializers.SlugRelatedField(
         slug_field='username', read_only=True,
         default=serializers.CurrentUserDefault()
@@ -93,6 +99,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class SignUpSerializer(serializers.ModelSerializer):
     """Сериализатор регистрации пользователя."""
+
     email = serializers.EmailField(
         required=True,
         max_length=254,
@@ -118,6 +125,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 class ConfirmationSerializer(serializers.Serializer):
     """Сериализатор кода подтверждения."""
+
     username = serializers.CharField(
         required=True,
         max_length=150,
@@ -128,6 +136,7 @@ class ConfirmationSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор для работы с User."""
+
     first_name = serializers.CharField(required=False, max_length=150)
     last_name = serializers.CharField(required=False, max_length=150)
 
@@ -141,6 +150,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserMeSerializer(serializers.ModelSerializer):
     """Сериализатор для работы с эндпоинтом 'me'."""
+
     username = serializers.CharField(
         required=True,
         max_length=150,
