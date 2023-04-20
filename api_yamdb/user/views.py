@@ -59,7 +59,7 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
             'confirmation_code': confirmation_code
         }
         message = render_to_string(
-            TEMPLATES_DIR / 'email_templates/confirmation_mail.html', context)
+            TEMPLATES_DIR/'email_templates/confirmation_mail.html', context)
 
         send_mail(
             'Код подтверждения',
