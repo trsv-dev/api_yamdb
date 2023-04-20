@@ -5,7 +5,7 @@ from rest_framework.permissions import BasePermission
 class Admin(BasePermission):
     """
     Пермишн админа или суперпользователя
-    для работы с Reviews, Comments.
+    для работы с User.
     """
 
     def has_permission(self, request, view):

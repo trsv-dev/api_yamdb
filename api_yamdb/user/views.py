@@ -21,7 +21,6 @@ from rest_framework_simplejwt.tokens import AccessToken
 from api_yamdb.settings import EMAIL_HOST_USER, TEMPLATES_DIR
 from reviews.models import User
 from user import serializers
-from user.mixins import UpdateModelMixin
 from user.permissions import (Admin)
 from user.serializers import (UserSerializer, UserMeSerializer)
 
@@ -50,10 +49,10 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
             return Response(
                 serializer.data, status=status.HTTP_200_OK
             )
-        else:
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+
+        return Response(
+            serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
 
     def send_message(self, email, username, confirmation_code):
         context = {
@@ -61,7 +60,7 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
             'confirmation_code': confirmation_code
         }
         message = render_to_string(
-            TEMPLATES_DIR/'email_templates/confirmation_mail.html', context)
+            TEMPLATES_DIR / 'email_templates/confirmation_mail.html', context)
 
         send_mail(
             'Код подтверждения',
@@ -74,30 +73,25 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
 
 class GetToken(generics.ListCreateAPIView):
     """Получение токена пользователем."""
-
     serializer_class = serializers.ConfirmationSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            username = serializer.validated_data.get('username')
-            confirmation_code = serializer.validated_data.get(
-                'confirmation_code')
-            user = get_object_or_404(User, username=username)
-            if default_token_generator.check_token(user, confirmation_code):
-                token = AccessToken.for_user(user)
-                return Response({'token': str(token)},
-                                status=status.HTTP_200_OK)
-            else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data.get('username')
+        confirmation_code = serializer.validated_data.get(
+            'confirmation_code')
+        user = get_object_or_404(User, username=username)
+        if default_token_generator.check_token(user, confirmation_code):
+            token = AccessToken.for_user(user)
+            return Response({'token': str(token)},
+                            status=status.HTTP_200_OK)
         else:
-            return Response(serializer.data,
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                   mixins.ListModelMixin, UpdateModelMixin,
-                   mixins.RetrieveModelMixin,
+                   mixins.ListModelMixin, mixins.RetrieveModelMixin,
                    viewsets.GenericViewSet):
     """
     Получить список всех пользователей,
