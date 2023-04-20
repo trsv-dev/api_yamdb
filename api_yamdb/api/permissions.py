@@ -41,7 +41,7 @@ class Moderator(BasePermission):
 class Admin(BasePermission):
     """
     Пермишн админа или суперпользователя
-    для работы с Reviews, Comments, Users.
+    для работы с Reviews, Comments.
     """
 
     def has_permission(self, request, view):
