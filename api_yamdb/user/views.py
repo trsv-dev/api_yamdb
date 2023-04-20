@@ -3,6 +3,7 @@ from django.contrib.auth.tokens import (default_token_generator,
 from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import mixins
@@ -17,12 +18,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
+from api_yamdb.settings import EMAIL_HOST_USER, TEMPLATES_DIR
+from reviews.models import User
 from user import serializers
 from user.mixins import UpdateModelMixin
 from user.permissions import (Admin)
 from user.serializers import (UserSerializer, UserMeSerializer)
-from api_yamdb.settings import EMAIL_HOST_USER
-from reviews.models import User
 
 
 class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
@@ -43,14 +44,9 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
                 raise ValidationError
 
             confirmation_code = default_token_generator.make_token(user)
-            message = (f'Здравствуйте, {username}!'
-                       f' Это ваш код подтверждения {confirmation_code}')
-            send_mail(
-                'Код подтверждения',
-                message,
-                EMAIL_HOST_USER,
-                [email]
-            )
+
+            self.send_message(email, username, confirmation_code)
+
             return Response(
                 serializer.data, status=status.HTTP_200_OK
             )
@@ -58,6 +54,22 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
+
+    def send_message(self, email, username, confirmation_code):
+        context = {
+            'username': username,
+            'confirmation_code': confirmation_code
+        }
+        message = render_to_string(
+            TEMPLATES_DIR/'email_templates/confirmation_mail.html', context)
+
+        send_mail(
+            'Код подтверждения',
+            message,
+            EMAIL_HOST_USER,
+            [email],
+            html_message=message
+        )
 
 
 class GetToken(generics.ListCreateAPIView):
