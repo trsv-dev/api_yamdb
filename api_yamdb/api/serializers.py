@@ -75,7 +75,8 @@ class ReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Вы уже написали отзыв для этого произведения.'
             )
-        return data
+        validated_data = super().validate(data)
+        return validated_data
 
 
 class CommentSerializer(serializers.ModelSerializer):
