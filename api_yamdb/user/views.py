@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-from rest_framework import mixins
 from rest_framework import status, generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -90,9 +89,7 @@ class GetToken(generics.ListCreateAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class UsersViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
-                   mixins.ListModelMixin, mixins.RetrieveModelMixin,
-                   viewsets.GenericViewSet):
+class UsersViewSet(viewsets.ModelViewSet):
     """
     Получить список всех пользователей,
     добавить нового пользователя,
@@ -102,14 +99,14 @@ class UsersViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     получить данные своей учетной записи по (англ.) me,
     изменить данные своей учетной записи по (англ.) me.
     """
-
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = "username"
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('=username',)
     pagination_class = LimitOffsetPagination
-    permission_classes = (Admin,)
+    permission_classes = (IsAuthenticated, Admin)
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(methods=['get', 'patch'], detail=False, url_path='me',
             permission_classes=(IsAuthenticated,),
