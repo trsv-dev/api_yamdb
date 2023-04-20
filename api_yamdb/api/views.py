@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
+from rest_framework import filters, permissions
 from rest_framework import mixins
 from rest_framework import status, generics
 from rest_framework import viewsets
@@ -23,9 +23,8 @@ from api import serializers
 from api.filters import TitleFilter
 from api.mixins import CreateDestroyListViewSet
 from api.mixins import UpdateModelMixin
-from api.permissions import (AdminUserOrReadOnly,
-                             AdminModeratorAuthorOrReadOnly,
-                             AdminUser)
+from api.permissions import (AdminOrReadOnly, Author,
+                             Moderator, Admin)
 from api.serializers import (ReviewSerializer, CommentSerializer,
                              CategorySerializer, GenreSerializer,
                              TitleReadSerializer, TitleWriteSerializer,
@@ -36,6 +35,7 @@ from reviews.models import User, Category, Genre, Title, Review
 
 class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
     """Кастомная регистрация пользователя."""
+
     permission_classes = [AllowAny]
     serializer_class = serializers.SignUpSerializer
 
@@ -70,6 +70,7 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
 
 class GetToken(generics.ListCreateAPIView):
     """Получение токена пользователем."""
+
     serializer_class = serializers.ConfirmationSerializer
 
     def post(self, request):
@@ -103,13 +104,14 @@ class UsersViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
     получить данные своей учетной записи по (англ.) me,
     изменить данные своей учетной записи по (англ.) me.
     """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = "username"
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('=username',)
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAuthenticated, AdminUser)
+    permission_classes = (Admin,)
 
     @action(methods=['get', 'patch'], detail=False, url_path='me',
             permission_classes=(IsAuthenticated,),
@@ -134,9 +136,10 @@ class CategoryViewSet(CreateDestroyListViewSet):
     создать категорию,
     удалить категорию.
     """
+
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (AdminUserOrReadOnly,)
+    permission_classes = (AdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter,)
     search_fields = ('name', 'slug')
@@ -149,9 +152,10 @@ class GenreViewSet(CreateDestroyListViewSet):
     добавить жанр,
     удалить жанр.
     """
+
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (AdminUserOrReadOnly,)
+    permission_classes = (AdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
     filter_backends = (SearchFilter,)
     search_fields = ('name', 'slug')
@@ -166,14 +170,15 @@ class TitleViewSet(viewsets.ModelViewSet):
     частичное обновление информации о произведении,
     удаление произведения.
     """
+
     queryset = Title.objects.annotate(rating=Avg('reviews__score'))
-    permission_classes = (AdminUserOrReadOnly,)
+    permission_classes = (AdminOrReadOnly,)
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
 
     def get_serializer_class(self):
-        if self.action in ('list', 'retrieve'):
+        if self.request.method in permissions.SAFE_METHODS:
             return TitleReadSerializer
         return TitleWriteSerializer
 
@@ -186,10 +191,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
     частично обновить отзыв по id,
     удалить отзыв по id.
     """
+
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
     pagination_class = LimitOffsetPagination
-    permission_classes = (AdminModeratorAuthorOrReadOnly,)
+    permission_classes = ((Author | Moderator | Admin),)
 
     def perform_create(self, serializer):
         title_id = self.kwargs.get('title_id')
@@ -210,8 +216,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     частично обновить комментарий к отзыву по id,
     удалить комментарий к отзыву по id.
     """
+
     serializer_class = CommentSerializer
-    permission_classes = (AdminModeratorAuthorOrReadOnly,)
+    permission_classes = ((Author | Moderator | Admin),)
 
     def get_queryset(self):
         review_id = self.kwargs.get("review_id")
