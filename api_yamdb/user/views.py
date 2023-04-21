@@ -48,8 +48,8 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
                 'username': username,
                 'confirmation_code': confirmation_code
             }
-            template = f'{TEMPLATES_DIR}',
-                       '/email_templates/confirmation_mail.html'
+            template = f'{TEMPLATES_DIR}'
+                       f'/email_templates/confirmation_mail.html'
 
             send_message(email, template, context)
 
