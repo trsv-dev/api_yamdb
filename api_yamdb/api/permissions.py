@@ -2,7 +2,7 @@ from rest_framework import permissions
 from rest_framework.permissions import BasePermission
 
 
-class AdminOrReadOnly(permissions.BasePermission):
+class IsAdminOrReadOnly(permissions.BasePermission):
     """Пермишн для работы с Genres и Categories."""
 
     def has_permission(self, request, view):
@@ -13,7 +13,7 @@ class AdminOrReadOnly(permissions.BasePermission):
         return False
 
 
-class Author(BasePermission):
+class IsAuthor(BasePermission):
     """Пермишн автора для работы с Reviews и Comments."""
 
     def has_permission(self, request, view):
@@ -25,7 +25,7 @@ class Author(BasePermission):
                 or obj.author == request.user)
 
 
-class Moderator(BasePermission):
+class IsModerator(BasePermission):
     """Пермишн модератора для работы с Reviews и Comments."""
 
     def has_permission(self, request, view):
@@ -38,7 +38,7 @@ class Moderator(BasePermission):
                 or request.user.is_staff)
 
 
-class Admin(BasePermission):
+class IsAdmin(BasePermission):
     """
     Пермишн админа или суперпользователя
     для работы с Reviews, Comments.

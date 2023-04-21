@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
-
-from user.validators import username_validator, pattern_validator
 
 
 class User(AbstractUser):
@@ -16,7 +15,12 @@ class User(AbstractUser):
     ]
 
     username = models.CharField(
-        validators=(username_validator, pattern_validator),
+        validators=(
+            RegexValidator(
+                regex=r'^[-a-zA-Z0-9_]+$',
+                message='Недопустимый символ в username'
+            ),
+        ),
         max_length=150,
         unique=True,
         blank=False,

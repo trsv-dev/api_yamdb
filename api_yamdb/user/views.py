@@ -15,12 +15,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
+from api.permissions import IsAdmin
 from api.utils import send_message
 from api_yamdb.settings import TEMPLATES_DIR
 from reviews.models import User
 from user import serializers
-from user.permissions import (Admin)
-from user.serializers import (UserSerializer, UserMeSerializer)
+from user.serializers import UserSerializer, UserMeSerializer
 
 
 class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
@@ -96,7 +96,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('=username',)
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAuthenticated, Admin)
+    permission_classes = (IsAuthenticated, IsAdmin)
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(methods=['get', 'patch'], detail=False, url_path='me',
