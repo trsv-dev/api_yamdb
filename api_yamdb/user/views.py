@@ -17,6 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
+from api.utils import send_message
 from api_yamdb.settings import EMAIL_HOST_USER, TEMPLATES_DIR
 from reviews.models import User
 from user import serializers
@@ -43,7 +44,13 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
 
             confirmation_code = default_token_generator.make_token(user)
 
-            self.send_message(email, username, confirmation_code)
+            context = {
+                'username': username,
+                'confirmation_code': confirmation_code
+            }
+            template = f'{TEMPLATES_DIR}/email_templates/confirmation_mail.html'
+
+            send_message(email, template, context)
 
             return Response(
                 serializer.data, status=status.HTTP_200_OK
@@ -51,22 +58,6 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
 
         return Response(
             serializer.errors, status=status.HTTP_400_BAD_REQUEST
-        )
-
-    def send_message(self, email, username, confirmation_code):
-        context = {
-            'username': username,
-            'confirmation_code': confirmation_code
-        }
-        message = render_to_string(
-            TEMPLATES_DIR / 'email_templates/confirmation_mail.html', context)
-
-        send_mail(
-            'Код подтверждения',
-            message,
-            EMAIL_HOST_USER,
-            [email],
-            html_message=message
         )
 
 
