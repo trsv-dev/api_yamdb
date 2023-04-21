@@ -1,9 +1,9 @@
 from django.contrib.auth.tokens import (default_token_generator,
                                         PasswordResetTokenGenerator)
-from django.core.mail import send_mail
+
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
-from django.template.loader import render_to_string
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import status, generics
@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
 from api.utils import send_message
-from api_yamdb.settings import EMAIL_HOST_USER, TEMPLATES_DIR
+from api_yamdb.settings import TEMPLATES_DIR
 from reviews.models import User
 from user import serializers
 from user.permissions import (Admin)
@@ -48,7 +48,8 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
                 'username': username,
                 'confirmation_code': confirmation_code
             }
-            template = f'{TEMPLATES_DIR}/email_templates/confirmation_mail.html'
+            template = f'{TEMPLATES_DIR}',
+                       '/email_templates/confirmation_mail.html'
 
             send_message(email, template, context)
 
