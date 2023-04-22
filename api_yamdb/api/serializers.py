@@ -65,7 +65,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         default=serializers.CurrentUserDefault()
     )
     title = serializers.PrimaryKeyRelatedField(
-        read_only=True,)
+        read_only=True,
+    )
 
     class Meta:
         model = Review
@@ -78,7 +79,6 @@ class ReviewSerializer(serializers.ModelSerializer):
             )
         ]
     
-
 
 class CommentSerializer(serializers.ModelSerializer):
     """ Сериализатор для работы с Comments."""
