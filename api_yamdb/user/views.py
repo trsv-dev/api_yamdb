@@ -75,8 +75,7 @@ class GetToken(generics.ListCreateAPIView):
             token = AccessToken.for_user(user)
             return Response({'token': str(token)},
                             status=status.HTTP_200_OK)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -91,7 +90,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    lookup_field = "username"
+    lookup_field = 'username'
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('=username',)
     pagination_class = LimitOffsetPagination
@@ -103,10 +102,10 @@ class UsersViewSet(viewsets.ModelViewSet):
             serializer_class=UserMeSerializer)
     def me(self, request):
         user = get_object_or_404(User, username=request.user.username)
-        if request.method == "GET":
+        if request.method == 'GET':
             serializer = self.get_serializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        if request.method == "PATCH":
+        if request.method == 'PATCH':
             serializer = self.get_serializer(user, data=request.data,
                                              partial=True)
             serializer.is_valid(raise_exception=True)
