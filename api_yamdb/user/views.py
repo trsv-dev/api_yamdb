@@ -1,5 +1,3 @@
-from http import HTTPStatus
-
 from django.contrib.auth.tokens import (default_token_generator,
                                         PasswordResetTokenGenerator)
 from django.shortcuts import get_object_or_404
@@ -34,7 +32,9 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
                 username=request.data.get('username'),
                 email=request.data.get('email')
         ).exists():
-            return Response(request.data, status=HTTPStatus.OK)
+            message = (f'Пользователь с такими данными '
+                       f'{request.data} уже существует')
+            return Response(message)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

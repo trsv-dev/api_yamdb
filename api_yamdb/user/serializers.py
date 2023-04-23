@@ -25,8 +25,8 @@ class SignUpSerializer(serializers.ModelSerializer):
         fields = ('email', 'username')
         read_only_fields = ['id']
 
-    def create(self, value):
-        return User.objects.create(**value)
+    def create(self, validated_data):
+        return User.objects.create(**validated_data)
 
     def validate_username(self, value):
         if value == 'me':
