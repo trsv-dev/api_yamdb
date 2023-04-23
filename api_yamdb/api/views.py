@@ -111,7 +111,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         review = self.get_review()
-        return review.comments.select_related('author', 'review')
+        return review.comments.select_related('author')
 
     def perform_create(self, serializer):
         review = self.get_review()
