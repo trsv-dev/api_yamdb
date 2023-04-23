@@ -80,7 +80,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
+    queryset = Review.objects.select_related('author', 'title')
     pagination_class = LimitOffsetPagination
     permission_classes = ((IsAuthor | IsModerator | IsAdmin),)
 
@@ -91,10 +91,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         title = self.get_title()
         serializer.save(author=self.request.user, title=title)
-
-    def get_queryset(self):
-        title = self.get_title()
-        return title.reviews.all()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -110,12 +106,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = ((IsAuthor | IsModerator | IsAdmin),)
 
     def get_review(self):
-        review_id = self.kwargs.get("review_id")
+        review_id = self.kwargs.get('review_id')
         return get_object_or_404(Review, id=review_id)
 
     def get_queryset(self):
         review = self.get_review()
-        return review.comments.all()
+        return review.comments.select_related('author', 'review')
 
     def perform_create(self, serializer):
         review = self.get_review()
