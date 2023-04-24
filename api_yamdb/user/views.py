@@ -1,11 +1,13 @@
 from django.contrib.auth.tokens import (default_token_generator,
                                         PasswordResetTokenGenerator)
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import status, generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
@@ -28,30 +30,25 @@ class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
     serializer_class = serializers.SignUpSerializer
 
     def post(self, request):
-        if User.objects.filter(
-                username=request.data.get('username'),
-                email=request.data.get('email')
-        ).exists():
-            message = (f'Пользователь с такими данными '
-                       f'{request.data} уже существует')
-            return Response(message)
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
         username = serializer.validated_data.get('username')
         email = serializer.validated_data['email']
-        user = User.objects.get(username=username, email=email)
+        try:
+            user, _ = User.objects.get_or_create(
+                email=email,
+                username=username
+            )
+        except IntegrityError:
+            raise ValidationError
+
         confirmation_code = default_token_generator.make_token(user)
 
         context = {
             'username': username,
             'confirmation_code': confirmation_code
         }
-
-        template = (
-            f'{TEMPLATES_DIR}/email_templates/confirmation_mail.html'
-        )
+        template = f'{TEMPLATES_DIR}/email_templates/confirmation_mail.html'
 
         send_message(email, template, context)
 

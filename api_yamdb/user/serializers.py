@@ -1,6 +1,5 @@
 from django.core.validators import RegexValidator
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 
 from reviews.models import (User)
 
@@ -11,33 +10,24 @@ class SignUpSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
         max_length=254,
-        validators=[UniqueValidator(queryset=User.objects.all())]
     )
     username = serializers.CharField(
         required=True,
         max_length=150,
-        validators=[RegexValidator(regex=r'^[\w.@+-]+$'),
-                    UniqueValidator(queryset=User.objects.all())],
+        validators=[RegexValidator(regex=r'^[\w.@+-]+$')]
     )
 
     class Meta:
         model = User
-        fields = ('email', 'username')
-        read_only_fields = ['id']
+        fields = ('id', 'email', 'username')
+        read_only_fields = ['id', ]
 
-    def create(self, validated_data):
-        return User.objects.create(**validated_data)
-
-    def validate_username(self, value):
-        if value == 'me':
+    def validate(self, data):
+        if data.get('username') == 'me':
             raise serializers.ValidationError(
-                'Имя пользователя не может быть "me"'
+                'Имя пользователя "me" зарезервировано в системе'
             )
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError(
-                'Имя пользователя уже существует'
-            )
-        return value
+        return data
 
 
 class ConfirmationSerializer(serializers.Serializer):
