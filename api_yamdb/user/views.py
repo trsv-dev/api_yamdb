@@ -23,27 +23,23 @@ from user import serializers
 from user.serializers import (UserSerializer, UserMeSerializer)
 
 
-class CustomSignUp(generics.CreateAPIView, PasswordResetTokenGenerator):
+class CustomSignUp(generics.CreateAPIView):
     """Кастомная регистрация пользователя."""
 
-    permission_classes = [AllowAny]
+    queryset = User.objects.all()
     serializer_class = serializers.SignUpSerializer
+    permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = self.get_serializer(data=request.data)
+        serializer = serializers.SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        username = serializer.validated_data.get('username')
-        email = serializer.validated_data['email']
-        try:
-            user, _ = User.objects.get_or_create(
-                email=email,
-                username=username
-            )
-        except IntegrityError:
-            raise ValidationError
-
+        username = serializer.data.get('username')
+        email = serializer.data.get('email')
+        user, created = User.objects.get_or_create(
+            username=username,
+            email=email
+        )
         confirmation_code = default_token_generator.make_token(user)
-
         context = {
             'username': username,
             'confirmation_code': confirmation_code

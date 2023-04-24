@@ -4,7 +4,7 @@ from rest_framework import serializers
 from reviews.models import (User)
 
 
-class SignUpSerializer(serializers.ModelSerializer):
+class SignUpSerializer(serializers.Serializer):
     """Сериализатор регистрации пользователя."""
 
     email = serializers.EmailField(
@@ -23,6 +23,14 @@ class SignUpSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', ]
 
     def validate(self, data):
+        if User.objects.filter(username=data['username'],
+                               email=data['email']).first():
+            return data
+        if (User.objects.filter(username=data['username']).first()
+                or User.objects.filter(email=data['email']).first()):
+            raise serializers.ValidationError(
+                'Пользователь с такими данными уже существует!'
+            )
         if data.get('username') == 'me':
             raise serializers.ValidationError(
                 'Имя пользователя "me" зарезервировано в системе'
