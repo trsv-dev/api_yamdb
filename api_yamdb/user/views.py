@@ -1,13 +1,10 @@
-from django.contrib.auth.tokens import (default_token_generator,
-                                        PasswordResetTokenGenerator)
-from django.db import IntegrityError
+from django.contrib.auth.tokens import (default_token_generator)
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import status, generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny
