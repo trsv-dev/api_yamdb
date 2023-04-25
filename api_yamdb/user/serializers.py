@@ -33,7 +33,7 @@ class SignUpSerializer(serializers.Serializer):
             return data
         if is_user_exists or is_email_exists:
             raise serializers.ValidationError(
-                f'Пользователь с такими данными уже существует!'
+                'Пользователь с такими данными уже существует!'
             )
         if data.get('username') == 'me':
             raise serializers.ValidationError(
