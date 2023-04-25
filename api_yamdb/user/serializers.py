@@ -52,7 +52,7 @@ class SignUpSerializer(serializers.Serializer):
                 )
             if (user.username == username) or (user.email == email):
                 raise serializers.ValidationError(
-                    f'Пользователь с такими данными уже существует!'
+                    'Пользователь с такими данными уже существует!'
                 )
 
         user = User.objects.create(**validated_data)
