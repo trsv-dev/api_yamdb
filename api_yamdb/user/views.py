@@ -30,13 +30,12 @@ class CustomSignUp(generics.CreateAPIView):
     def post(self, request):
         serializer = serializers.SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        username = serializer.data.get('username')
-        email = serializer.data.get('email')
-        user, created = User.objects.get_or_create(
-            username=username,
-            email=email
+        username = serializer.data['username']
+        email = serializer.data['email']
+
+        confirmation_code = default_token_generator.make_token(
+            User.objects.filter(username=username).first()
         )
-        confirmation_code = default_token_generator.make_token(user)
         context = {
             'username': username,
             'confirmation_code': confirmation_code

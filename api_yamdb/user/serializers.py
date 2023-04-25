@@ -23,18 +23,25 @@ class SignUpSerializer(serializers.Serializer):
         read_only_fields = ['id', ]
 
     def validate(self, data):
-        if User.objects.filter(username=data['username'],
-                               email=data['email']).first():
+        username = data['username']
+        email = data['email']
+
+        is_user_exists = User.objects.filter(username=username).exists()
+        is_email_exists = User.objects.filter(email=email).exists()
+
+        if is_user_exists and is_email_exists:
             return data
-        if (User.objects.filter(username=data['username']).first()
-                or User.objects.filter(email=data['email']).first()):
+        if is_user_exists or is_email_exists:
             raise serializers.ValidationError(
-                'Пользователь с такими данными уже существует!'
+                f'Пользователь с такими данными уже существует!'
             )
         if data.get('username') == 'me':
             raise serializers.ValidationError(
                 'Имя пользователя "me" зарезервировано в системе'
             )
+
+        User.objects.create(username=username, email=email)
+
         return data
 
 
