@@ -39,24 +39,18 @@ class SignUpSerializer(serializers.Serializer):
         for user in queryset:
 
             if username == user.username and email == user.email:
-                return validated_data
+                return user
 
             if user.username == username:
                 raise serializers.ValidationError(
                     f'Пользователь с именем {username} уже существует!'
                 )
             if user.email == email:
-                print(user.email)
                 raise serializers.ValidationError(
                     f'Пользователь с почтой {email} уже существует!'
                 )
-            if (user.username == username) or (user.email == email):
-                raise serializers.ValidationError(
-                    'Пользователь с такими данными уже существует!'
-                )
 
-        user = User.objects.create(**validated_data)
-        return user
+        return User.objects.create(**validated_data)
 
 
 class ConfirmationSerializer(serializers.Serializer):
