@@ -9,16 +9,12 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', 'you_need_to_set_the_secret_key_in_env')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost, 127.0.0.1').split(', ')
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -69,8 +65,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 
 
-# Database
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -78,8 +72,6 @@ DATABASES = {
     }
 }
 
-
-# Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -97,8 +89,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-
 LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'Europe/Moscow'
@@ -112,7 +102,6 @@ USE_TZ = True
 
 DATETIME_INPUT_FORMATS += ('%Y-%m-%dT%H:%M:%S.%fZ',)
 
-# Static files (CSS, JavaScript, Images)
 
 STATIC_URL = '/static/'
 
@@ -135,15 +124,16 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'user.User'
 
-RECIPIENT_ADDRESS = os.getenv('EMAIL_ADDRESS')
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = os.getenv('EMAIL_ADDRESS')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-DEFAULT_FROM_EMAIL = os.getenv('EMAIL_ADDRESS')
+
+# Отправка писем Яндекс-почтой:
+RECIPIENT_ADDRESS = os.getenv('RECIPIENT_ADDRESS', 'your_email_on_yandex@yandex.ru')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.yandex.ru')
+EMAIL_PORT = os.getenv('EMAIL_PORT', '465')
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'your_email_on_yandex@yandex.ru')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'your_email_on_yandex@yandex.ru')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'your_strong_email_password')
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 
 JWT_AUTH = {
     'JWT_VERIFY': True,
