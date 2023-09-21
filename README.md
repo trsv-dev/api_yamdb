@@ -97,7 +97,7 @@ EMAIL_PORT=465
 EMAIL_USE_SSL=True
 DEFAULT_FROM_EMAIL='your_email_on_yandex@yandex.ru'
 EMAIL_HOST_USER='your_email_on_yandex@yandex.ru'
-EMAIL_HOST_PASSWORD='your_email_on_yandex@yandex.ru'
+EMAIL_HOST_PASSWORD='your_password_yandex@yandex.ru'
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 ```
 **Адрес почты, пароль, django secret key, разумеется, надо заменить на свои.**
